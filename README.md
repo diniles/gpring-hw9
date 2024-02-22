@@ -17,3 +17,33 @@
 Docker for MySQL
 docker build -t mysql-img ./mysql/mysql-init/
 docker run --name mysql-container -p 3306:3306 -d mysql-img
+
+### How to run
+
+Build all projects:
+
+```bash
+eureka/gradlew build
+```
+
+```bash
+productsService/gradlew build
+```
+
+```bash
+reviewService/gradlew build
+```
+
+```bash
+cartService/gradlew build
+```
+
+```bash
+apiGateway/gradlew build
+```
+
+after that run docker-compose:
+
+```bash
+docker compose up --build
+```
