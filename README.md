@@ -13,3 +13,7 @@
 5. Используйте Eureka для обнаружения сервисов
 
 Альтернативно, можно перевести свой текущий проект на микросервисную архитектуру
+
+docker build -t mysql-img ./mysql-init
+
+docker run --name mysql-container -p 3306:3306 -d mysql-img
