@@ -10,63 +10,84 @@ services:
     ports:
       - "3306:3306"
     volumes:
-      - mysql-data:/var/lib/mysql
+      - ./mysql/mysql-init/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - backend
 
   eureka-server:
-    image: springcloud/eureka
+    image: openjdk:17-jdk-slim
     ports:
       - "8761:8761"
     networks:
       - backend
+    command: ["java", "-jar", "/app/eureka/eureka-server.jar"]
+    volumes:
+      - ./eureka/build/libs/eureka.jar:/app/eureka/eureka-server.jar
 
   products-service:
-    build: ./productsService
+    image: openjdk:17-jdk-slim
     ports:
       - "8081:8081"
     depends_on:
       - mysql-db
       - eureka-server
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
     networks:
       - backend
+    command: ["java", "-jar", "/app/productsService/productsService.jar"]
+    volumes:
+      - ./productsService/build/libs/productsService.jar:/app/productsService/productsService.jar
 
   cart-service:
-    build: ./cartService
+    image: openjdk:17-jdk-slim
     ports:
       - "8082:8082"
     depends_on:
       - mysql-db
       - eureka-server
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+       - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    command: ["java", "-jar", "/app/cartService/cartService.jar"]
+    volumes:
+      - ./cartService/build/libs/cartService.jar:/app/cartService/cartService.jar
     networks:
       - backend
 
   review-service:
-    build: ./reviewService
+    image: openjdk:17-jdk-slim
     ports:
       - "8083:8083"
     depends_on:
       - mysql-db
       - eureka-server
     environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+    command: ["java", "-jar", "/app/reviewService/reviewService.jar"]
+    volumes:
+      - ./reviewService/build/libs/reviewService.jar:/app/reviewService/reviewService.jar
     networks:
       - backend
 
   api-gateway:
-    build: ./apiGateway
+    image: openjdk:17-jdk-slim
     ports:
       - "8080:8080"
-    depends_on:
-      - eureka-server
-    environment:
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
     networks:
       - backend
+    environment:
+      - eureka.client.service-url.defaultZone=http://eureka-server:8761/eureka/
+
+    command: ["java", "-jar", "/app/apiGateway/apiGateway.jar"]
+    links:
+      - eureka-server
+    depends_on:
+      - eureka-server
+      - products-service
+      - cart-service
+      - review-service
+    volumes:
+      - ./apiGateway/build/libs/gateway.jar:/app/apiGateway/apiGateway.jar
 
 networks:
   backend:
