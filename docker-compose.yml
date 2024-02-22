@@ -22,7 +22,7 @@ services:
       - backend
 
   products-service:
-    build: ./products-service
+    build: ./productsService
     ports:
       - "8081:8081"
     depends_on:
@@ -34,7 +34,7 @@ services:
       - backend
 
   cart-service:
-    build: ./cart-service
+    build: ./cartService
     ports:
       - "8082:8082"
     depends_on:
@@ -46,7 +46,7 @@ services:
       - backend
 
   review-service:
-    build: ./review-service
+    build: ./reviewService
     ports:
       - "8083:8083"
     depends_on:
@@ -58,7 +58,7 @@ services:
       - backend
 
   api-gateway:
-    build: ./api-gateway
+    build: ./apiGateway
     ports:
       - "8080:8080"
     depends_on:
