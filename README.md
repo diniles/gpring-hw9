@@ -17,7 +17,3 @@
 Docker for MySQL
 docker build -t mysql-img ./mysql/mysql-init/
 docker run --name mysql-container -p 3306:3306 -d mysql-img
-
-Docker for eureka server
-docker build -t eureka-img ./eureka
-docker run --name eureka-container -p 8761:8761 -d eureka-img
